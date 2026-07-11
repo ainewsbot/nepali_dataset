@@ -1,0 +1,10 @@
+datasets>=2.19
+huggingface_hub>=0.23
+zstandard>=0.22
+datasketch>=1.6
+PyYAML>=6.0
+requests>=2.31
+tqdm>=4.66
+pytest>=8.0
+# optional, greatly improves article text extraction for news crawling
+trafilatura>=1.9 ; python_version >= "3.8"
