@@ -4,5 +4,6 @@ __pycache__/
 data/
 *.jsonl
 *.jsonl.zst
+!tests/fixtures/*.jsonl
 *.egg-info/
 .venv/
