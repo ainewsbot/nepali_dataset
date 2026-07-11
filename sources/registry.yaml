@@ -1,0 +1,325 @@
+# Registry of every known source of written Nepali text.
+#
+# Policy: COLLECT EVERYTHING, SORT RIGHTS LATER.
+# Every document collected carries its source's `license` and
+# `redistributable` fields so the corpus can be partitioned by rights at any
+# point without re-collection. Nothing here implies permission to
+# redistribute — see docs/DATASHEET.md.
+#
+# Fields:
+#   type:            hf_dataset | wikimedia_dump | news_sitemap | archive | manual
+#   access:          how the pipeline fetches it (downloader name), or "manual"
+#   est_size:        rough size of the Nepali portion (text, uncompressed)
+#   license:         upstream license as declared, or "unknown" / "copyrighted"
+#   redistributable: yes | no | unknown  (conservative call, revisit later)
+#   priority:        1 = collect first (big, clean, cheap), 3 = long tail
+#   status:          todo | collected | partial | blocked
+#   notes:           anything a future collector needs to know
+
+sources:
+
+  # ── Tier 1: existing open web-scale corpora (bulk of all collectable Nepali) ──
+
+  fineweb2:
+    type: hf_dataset
+    access: hf   # HuggingFaceFW/fineweb-2, config npi_Deva
+    hf_repo: HuggingFaceFW/fineweb-2
+    hf_config: npi_Deva
+    est_size: "~10 GB raw"
+    license: ODC-By 1.0 (+ CommonCrawl ToU)
+    redistributable: yes
+    priority: 1
+    status: todo
+    notes: Best-filtered CC derivative; start here. Heavy overlap with CulturaX/OSCAR — dedup handles it.
+
+  culturax:
+    type: hf_dataset
+    access: hf
+    hf_repo: uonlp/CulturaX
+    hf_config: ne
+    est_size: "~5 GB raw"
+    license: mC4 (ODC-By) + OSCAR terms
+    redistributable: yes
+    priority: 1
+    status: todo
+    notes: Union of mC4 + OSCAR, cleaned. Gated on HF — needs accepted terms + HF token.
+
+  madlad400:
+    type: hf_dataset
+    access: hf
+    hf_repo: allenai/madlad-400
+    hf_config: ne
+    est_size: "~4 GB (clean split)"
+    license: ODL/CC-BY-ish (CommonCrawl derivative)
+    redistributable: yes
+    priority: 1
+    status: todo
+    notes: Use the "clean" split; "noisy" split useful for recall later.
+
+  oscar-2301:
+    type: hf_dataset
+    access: hf
+    hf_repo: oscar-corpus/OSCAR-2301
+    hf_config: ne
+    est_size: "~3.7 GB"
+    license: CC0 (annotations) / original content rights remain
+    redistributable: yes
+    priority: 2
+    status: todo
+    notes: Gated on HF. Mostly subsumed by fineweb2/culturax — collect for coverage, dedup will collapse it.
+
+  cc100:
+    type: hf_dataset
+    access: hf
+    hf_repo: statmt/cc100
+    hf_config: ne
+    est_size: "~2 GB"
+    license: CommonCrawl ToU
+    redistributable: unknown
+    priority: 2
+    status: todo
+
+  hplt-v2:
+    type: hf_dataset
+    access: hf
+    hf_repo: HPLT/HPLT2.0_cleaned
+    hf_config: npi_Deva
+    est_size: "~5 GB"
+    license: CC0
+    redistributable: yes
+    priority: 1
+    status: todo
+    notes: Internet Archive + CommonCrawl derivative, permissively licensed.
+
+  # ── Tier 1: curated corpora ──
+
+  nepberta:
+    type: hf_dataset
+    access: hf
+    hf_repo: NepBERTa/NepBERTa   # corpus mirror; original ~14 GB from paper authors
+    hf_config: null
+    est_size: "~14 GB (largest curated Nepali corpus)"
+    license: research use, unclear redistribution
+    redistributable: unknown
+    priority: 1
+    status: todo
+    notes: Crawled from 36 Nepali news portals by NepBERTa authors (AACL 2022).
+
+  indiccorp-v2:
+    type: hf_dataset
+    access: hf
+    hf_repo: ai4bharat/IndicCorpV2
+    hf_config: ne
+    est_size: "~1 GB"
+    license: CC0
+    redistributable: yes
+    priority: 1
+    status: todo
+
+  wikipedia-ne:
+    type: hf_dataset
+    access: hf
+    hf_repo: wikimedia/wikipedia
+    hf_config: 20231101.ne
+    est_size: "~100 MB, ~63k articles"
+    license: CC-BY-SA 4.0
+    redistributable: yes
+    priority: 1
+    status: todo
+    notes: Small but the cleanest Nepali text that exists. Also via wikimedia_dump downloader (newiki-latest-pages-articles.xml.bz2) when HF is unreachable.
+
+  wikisource-ne:
+    type: wikimedia_dump
+    access: wikimedia   # newikisource-latest-pages-articles.xml.bz2
+    dump_wiki: newikisource
+    est_size: "~20 MB"
+    license: public domain / CC-BY-SA
+    redistributable: yes
+    priority: 2
+    status: todo
+    notes: Classic literature — Bhanubhakta, Devkota (public domain, author 50+ yrs deceased under Nepali copyright).
+
+  wiktionary-ne:
+    type: wikimedia_dump
+    access: wikimedia
+    dump_wiki: newiktionary
+    est_size: "~10 MB"
+    license: CC-BY-SA
+    redistributable: yes
+    priority: 3
+    status: todo
+
+  opus-parallel:
+    type: hf_dataset
+    access: hf
+    hf_repo: Helsinki-NLP/opus-100
+    hf_config: en-ne
+    est_size: "~50 MB Nepali side (plus GNOME/KDE/Ubuntu/Bible/GlobalVoices/flores on opus.nlpl.eu)"
+    license: mixed open
+    redistributable: yes
+    priority: 2
+    status: todo
+    notes: Take the Nepali side of parallel corpora. Also gives en-ne pairs for translation training later.
+
+  # ── Tier 2: news sites (richest source of edited modern Nepali) ──
+  # All copyrighted; collected under "sort rights later". Crawl politely:
+  # robots.txt respected, rate-limited, sitemap-driven.
+
+  onlinekhabar:
+    type: news_sitemap
+    access: news
+    base_url: https://www.onlinekhabar.com
+    est_size: "very large archive, 2006-"
+    license: copyrighted
+    redistributable: no
+    priority: 2
+    status: todo
+
+  ekantipur:
+    type: news_sitemap
+    access: news
+    base_url: https://ekantipur.com
+    est_size: "very large archive (Kantipur daily)"
+    license: copyrighted
+    redistributable: no
+    priority: 2
+    status: todo
+
+  setopati:
+    type: news_sitemap
+    access: news
+    base_url: https://www.setopati.com
+    est_size: large
+    license: copyrighted
+    redistributable: no
+    priority: 2
+    status: todo
+
+  ratopati:
+    type: news_sitemap
+    access: news
+    base_url: https://ratopati.com
+    est_size: large
+    license: copyrighted
+    redistributable: no
+    priority: 3
+    status: todo
+
+  nagariknews:
+    type: news_sitemap
+    access: news
+    base_url: https://nagariknews.nagariknetwork.com
+    est_size: large
+    license: copyrighted
+    redistributable: no
+    priority: 3
+    status: todo
+
+  bbc-nepali:
+    type: news_sitemap
+    access: news
+    base_url: https://www.bbc.com/nepali
+    est_size: medium
+    license: copyrighted (BBC)
+    redistributable: no
+    priority: 2
+    status: todo
+    notes: Exceptionally well-edited Nepali; high quality-per-byte.
+
+  gorkhapatra:
+    type: news_sitemap
+    access: news
+    base_url: https://gorkhapatraonline.com
+    est_size: "state daily since 1901 — oldest Nepali news archive"
+    license: government publication
+    redistributable: unknown
+    priority: 2
+    status: todo
+
+  himalkhabar:
+    type: news_sitemap
+    access: news
+    base_url: https://www.himalkhabar.com
+    est_size: medium
+    license: copyrighted
+    redistributable: no
+    priority: 3
+    status: todo
+
+  ukeraa:
+    type: news_sitemap
+    access: news
+    base_url: https://www.ukeraa.com
+    est_size: small-medium
+    license: copyrighted
+    redistributable: no
+    priority: 3
+    status: todo
+
+  # ── Tier 2: government / legal (formal register) ──
+
+  nepal-law-commission:
+    type: archive
+    access: manual
+    base_url: https://lawcommission.gov.np
+    est_size: "all Nepali statutes, constitution, acts — PDFs"
+    license: government publication (effectively public)
+    redistributable: unknown
+    priority: 2
+    status: todo
+    notes: Needs PDF→text (Devanagari OCR is NOT needed — PDFs are digital text). High-value formal register.
+
+  nepal-gazette:
+    type: archive
+    access: manual
+    base_url: http://rajpatra.dop.gov.np
+    est_size: large PDF archive
+    license: government publication
+    redistributable: unknown
+    priority: 3
+    status: todo
+
+  # ── Tier 3: books, literature, long tail ──
+
+  pustakalaya:
+    type: archive
+    access: manual
+    base_url: https://pustakalaya.org
+    est_size: "thousands of Nepali books/textbooks (OLE Nepal)"
+    license: mixed (much of it openly licensed for education)
+    redistributable: unknown
+    priority: 3
+    status: todo
+
+  madan-puraskar-pustakalaya:
+    type: archive
+    access: manual
+    base_url: http://www.mpp.org.np
+    est_size: "largest archive of Nepali print heritage"
+    license: mixed / historical public domain
+    redistributable: unknown
+    priority: 3
+    status: todo
+    notes: The definitive Nepali language archive; partnership likely needed for bulk access.
+
+  openslr54-transcripts:
+    type: archive
+    access: manual
+    base_url: https://www.openslr.org/54/
+    est_size: "~150k transcribed utterances"
+    license: CC-BY-SA 4.0
+    redistributable: yes
+    priority: 3
+    status: todo
+    notes: Text side of the Large Nepali ASR dataset — colloquial register.
+
+  sajha-forum:
+    type: archive
+    access: manual
+    base_url: https://sajha.com
+    est_size: "20+ years of diaspora forum posts"
+    license: user-generated, unclear
+    redistributable: no
+    priority: 3
+    status: todo
+    notes: Colloquial + Romanized Nepali mix. Collect last; heavy filtering needed.
